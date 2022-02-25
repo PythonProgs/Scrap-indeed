@@ -4,6 +4,7 @@ from bs4 import BeautifulSoup
 
 #Input Url, Parameter, dan Header
 url = 'https://www.indeed.com/jobs?'
+site = 'https://www.indeed.com'
 params = {
     'q' : 'Python Developer',
     'l' : 'New York State',
@@ -43,6 +44,49 @@ def get_total_pages():
 
     total=int(max(total_pages)) #Mengambil angka maksimal
     print(total)
+    return total
+
+def get_all_items():
+    params = {
+        'q': 'Python Developer',
+        'l': 'New York State',
+        'vjk': '71acc67a281f6038'
+    }
+
+    res = requests.get(url, params=params, headers=headers)
+
+    with open('temp/res.html', 'w+') as outfile:
+        outfile.write(res.text)
+        outfile.close()
+    soup = BeautifulSoup(res.text, 'html.parser')
+
+    contents = soup.find_all('table', 'jobCard_mainContent big6_visualChanges')
+
+    #pick item
+    #title
+    #company name
+    #company link
+    #company address
+
+    job_list = [] #untuk menampung list data
+    for item in contents:
+        title = item.find('h2', 'jobTitle').text
+        company = item.find('span', 'companyName')
+        company_name = company.text
+        try:
+            company_link = site + company.find('a')['href']
+        except:
+            company_link = 'Link is not avalable'
+
+        #sorting data
+        data_dict = {
+            'Title' : title,
+            'Company Name' : company_name,
+            'Company Link' : company_link
+        }
+        job_list.append(data_dict)
+
+    print('Jumlah Data: ', len(job_list))
 
 if __name__ == '__main__':
-    get_total_pages()
+    get_all_items()
