@@ -44,7 +44,6 @@ def get_total_pages(query, location):
         total_pages.append(page.text)
 
     total=int(max(total_pages)) #Mengambil angka maksimal
-    print(total)
     return total
 
 def get_all_items(query, location, start, page):
